@@ -1,20 +1,19 @@
 import './App.css';
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import Coin from './components/Coin';
 import Currency from './components/Currency';
 import { getProducts, getHistoricalData } from './services/api-coinbase';
+import { coinGecko } from './services/apiBaseURL';
 
 function App() {
   const [currencies, setCurrencies] = useState([]);
   const [coins, setCoins] = useState([]);
   const [search, setSearch] = useState('');
 
-  let coinbaseApiUrl = `https://api.pro.coinbase.com/products`;
-  let apiUrl =
-    'https://api.coingecko.com/api/v3/coins/markets?vs_currency=EUR&order=market_cap_desc&per_page=100&page=1&sparkline=false';
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+  // CURRENCIES DATA FROM COINBASE
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
 
-  // Data from Coinbase
   useEffect(() => {
     async function fetchProducts() {
       const products = await getProducts();
@@ -25,15 +24,27 @@ function App() {
     fetchProducts();
   }, []);
 
-  // Data from CoinGecko
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+  // COINS DATA FROM COINGECKO
+  // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // //
+
   useEffect(() => {
     let data = {};
-    async function fetchData() {
-      const response = await axios.get(apiUrl);
+    const fetchData = async () => {
+      const response = await coinGecko.get('/coins/markets', {
+        params: {
+          vs_currency: 'EUR',
+          // ids: 'bitcoin, ethereum',
+          order: 'market_cap_desc',
+          per_page: 100,
+          page: 1,
+          sparkline: false
+        }
+      });
       data = response.data;
       setCoins(data);
       console.log(data);
-    }
+    };
 
     fetchData();
   }, []);
@@ -52,13 +63,13 @@ function App() {
   );
 
   return (
-    <div className="coin-app">
-      <div className="coin-search">
-        <div className="coin-text">Search for a currency</div>
+    <div className='coin-app'>
+      <div className='coin-search'>
+        <div className='coin-text'>Search for a currency</div>
         <form>
           <input
-            type="text"
-            placeholder="search here"
+            type='text'
+            placeholder='search here'
             onChange={(e) => handleChange(e)}
           />
         </form>
